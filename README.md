@@ -48,3 +48,14 @@ Interpretation: Because 44.11% is greater than 10%, the model currently exceeds 
 Why this happened & how to fix it: Because we are training on highly dynamic, simulated mock patterns with deliberate weekly variations, a basic Linear Regression model struggles to capture non-linear jumps smoothly. To drop that error below 10%, we can engineer additional calendar variables (such as flagging weekend drops directly) or upgrade our model to a RandomForestRegressor to track complex resource usage spikes better.  
 
 # Hurdle 4
+What is REST and why is it the standard for building APIs?
+
+REST (Representational State Transfer) is an architectural standard that leverages standard stateless HTTP operations (like GET and POST) to enable independent software applications to seamlessly interact. It is the universal standard because it decouples the front-end interface from your back-end logic, ensuring your system is scalable, platform-agnostic, and incredibly lightweight to maintain.
+
+What is the difference between a GET and a POST request? Which would you use to submit new billing data?
+
+A GET request is designed exclusively to fetch or read information from a server without modifying any backend state. A POST request is explicitly designed to send data payloads to a server to create, append, or update resource states on the backend database. You must use a POST request to submit new billing data since you are introducing fresh entries into your data architecture.
+
+Why run the API and dashboard as two separate processes rather than one combined script?
+
+This enforces the architectural principle of Separation of Concerns. By running the data processing layer (FastAPI) separately from the user presentation interface (Streamlit), you protect your primary analytics engine. If a surge of web traffic overloads or crashes your Streamlit interface, your core data ingestion pipelines, storage services, and underlying machine learning inference services continue running securely without interruption.
