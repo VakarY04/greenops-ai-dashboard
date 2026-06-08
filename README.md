@@ -39,13 +39,7 @@ Standard machine learning models cannot interpret raw, continuously growing cale
 
 What are the risks of using Linear Regression for this task? What assumptions does it make?   
 
-Linear Regression assumes linearity (that relationships between features and emissions are direct straight lines), homoscedasticity (constant error variance), and independence of errors. The key risk here is that cloud workload carbon emissions are frequently non-linear—experiencing dramatic exponential spikes during large batches or scaling events that simple linear equations fail to track accurately.
-
-# Interpreting Your Results (For My README)
-The prompt requires you to interpret your RMSE relative to the 10% target:  
-Your Results: Your model generated an RMSE of 14.2749 kg against a daily mean of 32.3656 kg, yielding an error percentage of 44.11%.
-Interpretation: Because 44.11% is greater than 10%, the model currently exceeds the target error threshold.  
-Why this happened & how to fix it: Because we are training on highly dynamic, simulated mock patterns with deliberate weekly variations, a basic Linear Regression model struggles to capture non-linear jumps smoothly. To drop that error below 10%, we can engineer additional calendar variables (such as flagging weekend drops directly) or upgrade our model to a RandomForestRegressor to track complex resource usage spikes better.  
+Linear Regression assumes linearity (that relationships between features and emissions are direct straight lines), homoscedasticity (constant error variance), and independence of errors. The key risk here is that cloud workload carbon emissions are frequently non-linear—experiencing dramatic exponential spikes during large batches or scaling events that simple linear equations fail to track accurately.  
 
 # Hurdle 4
 What is REST and why is it the standard for building APIs?
@@ -59,3 +53,19 @@ A GET request is designed exclusively to fetch or read information from a server
 Why run the API and dashboard as two separate processes rather than one combined script?
 
 This enforces the architectural principle of Separation of Concerns. By running the data processing layer (FastAPI) separately from the user presentation interface (Streamlit), you protect your primary analytics engine. If a surge of web traffic overloads or crashes your Streamlit interface, your core data ingestion pipelines, storage services, and underlying machine learning inference services continue running securely without interruption.
+
+# Hurdle 5
+Hurdle 5 was the final phase of the project: deploying the FastAPI backend API to Azure App Service (Linux) so it could host your machine learning model and serve live carbon metrics to your frontend dashboard.
+
+The deployment initially failed because a broken GitHub Actions pipeline corrupted the cloud file workspace, leaving the application stuck on a continuous Not Found (404) error. Furthermore, hidden bugs like Linux case-sensitivity issues, missing package dependencies, and container startup shell crashes (source: not found) kept throwing Application Errors.
+
+How We Cleared It
+We systematically knocked down each blocker using a 4-step hands-on server patch:
+
+Purged the Corrupted Files: Bypassed the broken pipeline by opening the Kudu File Manager to delete the stuck artifacts and drop the clean project folders directly into Azure's root web directory.
+
+Fixed the Case-Sensitivity Bug: Renamed the lowercase api folder to an uppercase Python module (API) using Git to stop the case-sensitive Linux server from crashing on internal module imports.
+
+Manually Built the Environment via SSH: Opened a live SSH tunnel straight into the active Linux container to manually create the missing virtual environment sandbox (python -m venv antenv) and run pip install -r requirements.txt directly on Azure's hardware.
+
+The Final Result: The live /health link instantly went green returning {"status": "ok"}, allowing your local Streamlit dashboard to successfully connect and fetch real-time cloud analytics (0.42 kg CO2e)!

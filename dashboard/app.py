@@ -9,7 +9,7 @@ st.markdown("<h1 style='color: #007acc;'>GreenOps AI Sustainability Dashboard</h
 st.subheader("Cloud Infrastructure Carbon Accounting & Predictive Systems")
 st.markdown("---")
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "https://greenops-api-2301010942-ekbbdebwfwadeha5.southeastasia-01.azurewebsites.net"
 
 # Fetch general summary metrics from the running backend API
 try:
